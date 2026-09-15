@@ -7,6 +7,8 @@ import { LoginDto } from '../users/dto/login.dto';
 import { RegisterDto } from '../users/dto/register.dto';
 import { User, UserRole } from '../users/entities/user.entity';
 
+export type SafeUser = Pick<User, 'id' | 'username' | 'role'>;
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -14,7 +16,7 @@ export class AuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<Omit<User, 'password'>> {
+  async register(dto: RegisterDto): Promise<SafeUser> {
     const exists = await this.users.findOne({ where: { username: dto.username } });
     if (exists) throw new ConflictException('Пользователь с таким username уже существует.');
 
@@ -24,8 +26,7 @@ export class AuthService {
       role: UserRole.USER,
     });
     const saved = await this.users.save(user);
-    const { password: _password, ...safeUser } = saved;
-    return safeUser;
+    return { id: saved.id, username: saved.username, role: saved.role };
   }
 
   async login(dto: LoginDto): Promise<{ access_token: string }> {
