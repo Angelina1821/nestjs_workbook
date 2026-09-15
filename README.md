@@ -156,12 +156,6 @@ UPDATE users SET role = 'ADMIN' WHERE username = 'admin';
 
 Коллекцию запросов можно импортировать из `postman/NestJS-Workshop-Booking.postman_collection.json`.
 
-## Проверка
-
-Перед сдачей рекомендуется проверить:
-
-```bash
-npm run build
 npm test
 ```
 
