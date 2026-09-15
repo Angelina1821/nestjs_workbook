@@ -52,8 +52,9 @@ export class WorkshopsService {
 
     let classroom = workshop.classroom;
     if (dto.classroomId !== undefined) {
-      classroom = await this.classrooms.findOneBy({ id: dto.classroomId });
-      if (!classroom) throw new NotFoundException('Аудитория не найдена.');
+      const foundClassroom = await this.classrooms.findOneBy({ id: dto.classroomId });
+      if (!foundClassroom) throw new NotFoundException('Аудитория не найдена.');
+      classroom = foundClassroom;
     }
 
     const maxParticipants = dto.maxParticipants ?? workshop.maxParticipants;
