@@ -10,7 +10,6 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 export class BookingsService {
   constructor(
     @InjectRepository(Booking) private readonly bookings: Repository<Booking>,
-    @InjectRepository(Workshop) private readonly workshops: Repository<Workshop>,
     private readonly dataSource: DataSource,
   ) {}
 
