@@ -1,12 +1,11 @@
-import { Controller, Delete, Get, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
 import { User, UserRole } from '../users/entities/user.entity';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { BookingsService } from './bookings.service';
-import { Body } from '@nestjs/common';
 
 interface AuthenticatedRequest extends Request {
   user: User;
@@ -22,8 +21,18 @@ export class BookingsController {
     return this.service.create(req.user, dto);
   }
 
-  @Get('mine')
+  @Post('create')
+  createLegacy(@Req() req: AuthenticatedRequest, @Body() dto: CreateBookingDto) {
+    return this.service.create(req.user, dto);
+  }
+
+  @Get()
   findMine(@Req() req: AuthenticatedRequest) {
+    return this.service.findMine(req.user);
+  }
+
+  @Get('mine')
+  findMineAlias(@Req() req: AuthenticatedRequest) {
     return this.service.findMine(req.user);
   }
 
