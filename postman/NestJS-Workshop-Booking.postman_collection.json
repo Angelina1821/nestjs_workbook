@@ -1,0 +1,28 @@
+{
+  "info": {
+    "name": "Workshop Booking System — NestJS",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key":"baseUrl","value":"http://localhost:3000/api"},
+    {"key":"userToken","value":""},
+    {"key":"adminToken","value":""},
+    {"key":"workshopId","value":"1"},
+    {"key":"bookingId","value":"1"},
+    {"key":"classroomId","value":"1"}
+  ],
+  "item": [
+    {"name":"Register","request":{"method":"POST","body":{"mode":"raw","raw":"{\n  \"username\": \"testuser\",\n  \"password\": \"Test12345\"\n}","options":{"raw":{"language":"json"}}},"url":"{{baseUrl}}/auth/register"}},
+    {"name":"Login","request":{"method":"POST","body":{"mode":"raw","raw":"{\n  \"username\": \"testuser\",\n  \"password\": \"Test12345\"\n}","options":{"raw":{"language":"json"}}},"url":"{{baseUrl}}/auth/login"}},
+    {"name":"List workshops","request":{"method":"GET","url":"{{baseUrl}}/workshops"}},
+    {"name":"Get workshop","request":{"method":"GET","url":"{{baseUrl}}/workshops/{{workshopId}}"}},
+    {"name":"Create classroom — ADMIN","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"}],"body":{"mode":"raw","raw":"{\n  \"name\": \"Аудитория 1\",\n  \"capacity\": 20\n}","options":{"raw":{"language":"json"}}},"url":"{{baseUrl}}/workshops/classrooms"}},
+    {"name":"Create workshop — ADMIN","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"}],"body":{"mode":"raw","raw":"{\n  \"title\": \"Основы TypeScript\",\n  \"description\": \"Практический мастер-класс\",\n  \"date\": \"2027-01-15T18:00:00Z\",\n  \"maxParticipants\": 10,\n  \"classroomId\": {{classroomId}}\n}","options":{"raw":{"language":"json"}}},"url":"{{baseUrl}}/workshops"}},
+    {"name":"Update workshop — ADMIN","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"}],"body":{"mode":"raw","raw":"{\n  \"title\": \"Основы TypeScript — обновлённый курс\"\n}","options":{"raw":{"language":"json"}}},"url":"{{baseUrl}}/workshops/{{workshopId}}"}},
+    {"name":"Create booking","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{userToken}}"}],"body":{"mode":"raw","raw":"{\n  \"workshopId\": {{workshopId}}\n}","options":{"raw":{"language":"json"}}},"url":"{{baseUrl}}/bookings"}},
+    {"name":"List my bookings","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{userToken}}"}],"url":"{{baseUrl}}/bookings/mine"}},
+    {"name":"Cancel booking","request":{"method":"DELETE","header":[{"key":"Authorization","value":"Bearer {{userToken}}"}],"url":"{{baseUrl}}/bookings/{{bookingId}}"}},
+    {"name":"List all bookings — ADMIN","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"}],"url":"{{baseUrl}}/bookings/all"}},
+    {"name":"Delete workshop — ADMIN","request":{"method":"DELETE","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"}],"url":"{{baseUrl}}/workshops/{{workshopId}}"}}
+  ]
+}
