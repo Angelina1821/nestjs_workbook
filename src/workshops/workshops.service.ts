@@ -18,6 +18,10 @@ export class WorkshopsService {
     return this.workshops.find({ relations: { classroom: true }, order: { date: 'ASC' } });
   }
 
+  findClassrooms(): Promise<Classroom[]> {
+    return this.classrooms.find({ order: { name: 'ASC' } });
+  }
+
   async findOne(id: number): Promise<Workshop> {
     const workshop = await this.workshops.findOne({ where: { id }, relations: { classroom: true } });
     if (!workshop) throw new NotFoundException('Мастер-класс не найден.');
@@ -31,21 +35,38 @@ export class WorkshopsService {
     if (dto.maxParticipants > classroom.capacity) {
       throw new BadRequestException('Вместимость мастер-класса не может превышать вместимость аудитории.');
     }
-    return this.workshops.save(this.workshops.create({ ...dto, classroom }));
+    return this.workshops.save(this.workshops.create({
+      title: dto.title,
+      description: dto.description,
+      date: dto.date,
+      maxParticipants: dto.maxParticipants,
+      classroom,
+    }));
   }
 
   async update(id: number, dto: UpdateWorkshopDto): Promise<Workshop> {
     const workshop = await this.findOne(id);
-    if (dto.date && dto.date <= new Date()) throw new BadRequestException('Дата мастер-класса должна быть в будущем.');
-    if (dto.classroomId) {
-      const classroom = await this.classrooms.findOneBy({ id: dto.classroomId });
-      if (!classroom) throw new NotFoundException('Аудитория не найдена.');
-      workshop.classroom = classroom;
+    if (dto.date && dto.date <= new Date()) {
+      throw new BadRequestException('Дата мастер-класса должна быть в будущем.');
     }
-    if (dto.maxParticipants && dto.maxParticipants > workshop.classroom.capacity) {
+
+    let classroom = workshop.classroom;
+    if (dto.classroomId !== undefined) {
+      classroom = await this.classrooms.findOneBy({ id: dto.classroomId });
+      if (!classroom) throw new NotFoundException('Аудитория не найдена.');
+    }
+
+    const maxParticipants = dto.maxParticipants ?? workshop.maxParticipants;
+    if (maxParticipants > classroom.capacity) {
       throw new BadRequestException('Вместимость мастер-класса превышает вместимость аудитории.');
     }
-    Object.assign(workshop, dto);
+
+    workshop.title = dto.title ?? workshop.title;
+    workshop.description = dto.description ?? workshop.description;
+    workshop.date = dto.date ?? workshop.date;
+    workshop.maxParticipants = maxParticipants;
+    workshop.classroom = classroom;
+
     return this.workshops.save(workshop);
   }
 
